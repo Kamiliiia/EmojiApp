@@ -1,6 +1,5 @@
 package com.example.emojiapp.ui.navigation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,8 +25,7 @@ import com.example.emojiapp.ui.utils.Constants.SUBCATEGORIES_ROUTE
  * Funkcja definiująca nawigację w aplikacji.
  * Używa NavHost do zarządzania ekranami i ich przejściami.
  */
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
+@Composable // Usunięto @OptIn(ExperimentalFoundationApi::class)
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = START_ROUTE) {
@@ -52,7 +50,7 @@ fun AppNavigation() {
             ConfirmationScreen(subcategory = subcategory, navController = navController)
         }
         // Ekran po wysłaniu wiadomości
-        composable(MESSAGE_SENT_ROUTE) { MessageSentScreen() }
+        composable(MESSAGE_SENT_ROUTE) { MessageSentScreen(navController) } // Przekazano navController
         // Ekran ustawień
         composable(SETTINGS_ROUTE) { SettingsScreen(navController) }
     }

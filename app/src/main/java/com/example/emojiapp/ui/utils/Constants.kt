@@ -9,6 +9,7 @@ object Constants {
     const val CONFIRMATION_ROUTE = "confirmation/"
     const val SUBCATEGORY_ARGUMENT = "subcategory"
     const val MESSAGE_SENT_ROUTE = "messageSent"
+    const val OTHER_SUBCATEGORY = "Inne"
     val CATEGORIES = listOf("Jedzenie", "Łazienka", "Rozrywka", "Inne")
     val SUBCATEGORIES = mapOf(
         "Jedzenie" to listOf("Jedzenie", "Picie"),

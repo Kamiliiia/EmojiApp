@@ -24,7 +24,11 @@ fun CategoryScreen(category: String, navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                navController.navigate("${Constants.SUBCATEGORIES_ROUTE}$category")
+                if (category == "Inne") {
+                    navController.navigate("${Constants.CONFIRMATION_ROUTE}${Constants.OTHER_SUBCATEGORY}")
+                } else {
+                    navController.navigate("${Constants.SUBCATEGORIES_ROUTE}$category")
+                }
             }
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
