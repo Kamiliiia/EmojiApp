@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +26,7 @@ fun CategoryScreen(category: String, navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                if (category == "Inne") {
+                if (category == Constants.OTHER_SUBCATEGORY) {
                     navController.navigate("${Constants.CONFIRMATION_ROUTE}${Constants.OTHER_SUBCATEGORY}")
                 } else {
                     navController.navigate("${Constants.SUBCATEGORIES_ROUTE}$category")
@@ -34,10 +36,24 @@ fun CategoryScreen(category: String, navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (category == Constants.OTHER_SUBCATEGORY) {
+            Icon(
+                imageVector = Constants.CATEGORY_ICONS[category]!!,
+                contentDescription = category,
+                modifier = Modifier.size(150.dp),
+            )
+        } else {
+            Icon(
+                imageVector = Constants.CATEGORY_ICONS[category]!!,
+                contentDescription = category,
+                modifier = Modifier.size(150.dp)
+            )
+        }
         Text(
             text = category,
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(8.dp)
         )
     }
 }

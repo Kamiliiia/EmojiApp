@@ -1,5 +1,12 @@
 package com.example.emojiapp.ui.utils
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bathtub
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Sos
+import androidx.compose.ui.graphics.vector.ImageVector
+
 object Constants {
     const val START_ROUTE = "start"
     const val MAIN_ROUTE = "main"
@@ -10,11 +17,17 @@ object Constants {
     const val SUBCATEGORY_ARGUMENT = "subcategory"
     const val MESSAGE_SENT_ROUTE = "messageSent"
     const val OTHER_SUBCATEGORY = "Inne"
-    val CATEGORIES = listOf("Jedzenie", "Łazienka", "Rozrywka", "Inne")
+    val CATEGORIES = listOf("Jedzenie", "Łazienka", "Rozrywka", OTHER_SUBCATEGORY)
     val SUBCATEGORIES = mapOf(
         "Jedzenie" to listOf("Jedzenie", "Picie"),
         "Łazienka" to listOf("Toaleta", "Wanna"),
         "Rozrywka" to listOf("Telewizja", "Spacer"),
-        "Inne" to emptyList()
+        OTHER_SUBCATEGORY to emptyList()
+    )
+    val CATEGORY_ICONS: Map<String, ImageVector> = mapOf(
+        "Jedzenie" to Icons.Filled.Restaurant,
+        "Łazienka" to Icons.Filled.Bathtub,
+        "Rozrywka" to Icons.Filled.MusicNote,
+        OTHER_SUBCATEGORY to Icons.Filled.Sos // Dodano ikonkę SOS
     )
 }
