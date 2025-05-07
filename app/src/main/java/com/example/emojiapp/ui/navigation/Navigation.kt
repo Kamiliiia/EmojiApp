@@ -21,19 +21,12 @@ import com.example.emojiapp.ui.utils.Constants.START_ROUTE
 import com.example.emojiapp.ui.utils.Constants.SUBCATEGORY_ARGUMENT
 import com.example.emojiapp.ui.utils.Constants.SUBCATEGORIES_ROUTE
 
-/**
- * Funkcja definiująca nawigację w aplikacji.
- * Używa NavHost do zarządzania ekranami i ich przejściami.
- */
-@Composable // Usunięto @OptIn(ExperimentalFoundationApi::class)
+@Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = START_ROUTE) {
-        // Ekran startowy
         composable(START_ROUTE) { StartScreen(navController) }
-        // Ekran główny z kategoriami
         composable(MAIN_ROUTE) { MainScreen(navController) }
-        // Ekran z podkategoriami
         composable(
             "$SUBCATEGORIES_ROUTE{$CATEGORY_ARGUMENT}",
             arguments = listOf(navArgument(CATEGORY_ARGUMENT) { type = NavType.StringType })
@@ -41,7 +34,6 @@ fun AppNavigation() {
             val category = backStackEntry.arguments?.getString(CATEGORY_ARGUMENT) ?: ""
             SubcategoryScreen(category = category, navController = navController)
         }
-        // Ekran potwierdzenia
         composable(
             "$CONFIRMATION_ROUTE{$SUBCATEGORY_ARGUMENT}",
             arguments = listOf(navArgument(SUBCATEGORY_ARGUMENT) { type = NavType.StringType })
@@ -49,9 +41,7 @@ fun AppNavigation() {
             val subcategory = backStackEntry.arguments?.getString(SUBCATEGORY_ARGUMENT) ?: ""
             ConfirmationScreen(subcategory = subcategory, navController = navController)
         }
-        // Ekran po wysłaniu wiadomości
-        composable(MESSAGE_SENT_ROUTE) { MessageSentScreen(navController) } // Przekazano navController
-        // Ekran ustawień
+        composable(MESSAGE_SENT_ROUTE) { MessageSentScreen(navController) }
         composable(SETTINGS_ROUTE) { SettingsScreen(navController) }
     }
 }
