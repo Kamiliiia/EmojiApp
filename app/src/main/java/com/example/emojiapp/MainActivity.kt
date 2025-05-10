@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattServer
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
@@ -28,9 +29,98 @@ import androidx.core.content.ContextCompat
 import com.example.emojiapp.ui.navigation.AppNavigation
 import com.example.emojiapp.ui.theme.EmojiAppTheme
 import java.util.UUID
+import android.bluetooth.BluetoothGattServerCallback
+import android.bluetooth.BluetoothGattService
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseData
+import android.bluetooth.le.AdvertiseSettings
+import android.os.ParcelUuid
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
+
+class BLEGattServerManager(private val context: Context) {
+    private var gattServer: BluetoothGattServer? = null
+    private val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
+    private val bluetoothAdapter = bluetoothManager?.adapter
+
+    private val gattServerCallback = object : BluetoothGattServerCallback() {
+        override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
+            Log.d("BLEServer", "Connection state changed: $device $newState")
+        }
+
+        override fun onCharacteristicReadRequest(
+            device: BluetoothDevice?, requestId: Int, offset: Int,
+            characteristic: BluetoothGattCharacteristic?
+        ) {
+            Log.d("BLEServer", "Read request from $device for ${characteristic?.uuid}")
+            val response = byteArrayOf(0x42) // Example byte
+            gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, response)
+        }
+
+        override fun onCharacteristicWriteRequest(
+            device: BluetoothDevice?, requestId: Int, characteristic: BluetoothGattCharacteristic?,
+            preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?
+        ) {
+            Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
+            if (responseNeeded) {
+                gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
+            }
+        }
+    }
+
+    fun startServer() {
+        gattServer = bluetoothManager?.openGattServer(context, gattServerCallback)
+
+        val service = BluetoothGattService(
+            UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb"),
+            BluetoothGattService.SERVICE_TYPE_PRIMARY
+        )
+
+        val characteristic = BluetoothGattCharacteristic(
+            UUID.fromString("0000dcba-0000-1000-8000-00805f9b34fb"),
+            BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_WRITE,
+            BluetoothGattCharacteristic.PERMISSION_READ or BluetoothGattCharacteristic.PERMISSION_WRITE
+        )
+        service.addCharacteristic(characteristic)
+        gattServer?.addService(service)
+
+        startAdvertising()
+    }
+
+    private fun startAdvertising() {
+        val advertiser = bluetoothAdapter?.bluetoothLeAdvertiser
+        if (advertiser == null) {
+            Log.e("BLEServer", "BLE Advertiser not supported")
+            return
+        }
+
+        val settings = AdvertiseSettings.Builder()
+            .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+            .setConnectable(true)
+            .setTimeout(0)
+            .build()
+
+        val data = AdvertiseData.Builder()
+            .setIncludeDeviceName(true)
+            .addServiceUuid(ParcelUuid(UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb")))
+            .build()
+
+        advertiser.startAdvertising(settings, data, object : AdvertiseCallback() {
+            override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                Log.d("BLEServer", "Advertising started")
+            }
+
+            override fun onStartFailure(errorCode: Int) {
+                Log.e("BLEServer", "Advertising failed: $errorCode")
+            }
+        })
+    }
+
+    fun stopServer() {
+        gattServer?.close()
+    }
+}
 
 class BLEManager(private val context: Context, private val bluetoothAdapter: BluetoothAdapter?) {
     private var bluetoothGatt: BluetoothGatt? = null
