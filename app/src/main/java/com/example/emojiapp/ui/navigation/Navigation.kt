@@ -20,9 +20,10 @@ import com.example.emojiapp.ui.utils.Constants.SETTINGS_ROUTE
 import com.example.emojiapp.ui.utils.Constants.START_ROUTE
 import com.example.emojiapp.ui.utils.Constants.SUBCATEGORY_ARGUMENT
 import com.example.emojiapp.ui.utils.Constants.SUBCATEGORIES_ROUTE
+import com.example.emojiapp.BLEManager
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(bleManager: BLEManager) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = START_ROUTE) {
         composable(START_ROUTE) { StartScreen(navController) }

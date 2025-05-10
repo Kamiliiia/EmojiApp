@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.example.emojiapp.ui.navigation.AppNavigation
 import com.example.emojiapp.ui.theme.EmojiAppTheme
+import java.util.UUID
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -59,6 +61,39 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i("BLEManager", "Disconnected from GATT server.")
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.i("BLEManager", "Services discovered")
+                gatt?.services?.forEach { service ->
+                    Log.d("BLEManager", "Service UUID: ${service.uuid}")
+                    service.characteristics.forEach { characteristic ->
+                        Log.d("BLEManager", "  Characteristic UUID: ${characteristic.uuid}")
+                    }
+                }
+
+                // Optional: Automatically read or write here if desired
+            } else {
+                Log.w("BLEManager", "Service discovery failed with status: $status")
+            }
+        }
+
+        override fun onCharacteristicRead(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS && characteristic != null) {
+                val value = characteristic.value
+                Log.d("BLEManager", "Read from ${characteristic.uuid}: ${value?.joinToString()}")
+            } else {
+                Log.e("BLEManager", "Read failed from ${characteristic?.uuid}")
+            }
+        }
+
+        override fun onCharacteristicWrite(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.d("BLEManager", "Successfully wrote to ${characteristic?.uuid}")
+            } else {
+                Log.e("BLEManager", "Failed to write to ${characteristic?.uuid}, status=$status")
             }
         }
     }
@@ -105,6 +140,40 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
                 return
             }
             bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        }
+    }
+
+    fun readCharacteristic(serviceUUID: UUID, characteristicUUID: UUID) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("BLEManager", "No permission to read characteristic")
+            return
+        }
+
+        val service = bluetoothGatt?.getService(serviceUUID)
+        val characteristic = service?.getCharacteristic(characteristicUUID)
+
+        if (characteristic != null) {
+            bluetoothGatt?.readCharacteristic(characteristic)
+        } else {
+            Log.w("BLEManager", "Characteristic $characteristicUUID not found in service $serviceUUID")
+        }
+    }
+
+    fun writeCharacteristic(serviceUUID: UUID, characteristicUUID: UUID, value: ByteArray) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("BLEManager", "No permission to write characteristic")
+            return
+        }
+
+        val service = bluetoothGatt?.getService(serviceUUID)
+        val characteristic = service?.getCharacteristic(characteristicUUID)
+
+        if (characteristic != null) {
+            characteristic.value = value
+            val success = bluetoothGatt?.writeCharacteristic(characteristic) ?: false
+            Log.d("BLEManager", "Write initiated: $success")
+        } else {
+            Log.w("BLEManager", "Characteristic $characteristicUUID not found in service $serviceUUID")
         }
     }
 }
@@ -155,7 +224,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavigation()
+                    AppNavigation(bleManager = bleManager)
                 }
             }
         }
