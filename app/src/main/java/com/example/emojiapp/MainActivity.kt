@@ -128,9 +128,16 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
-            if (result != null) {
-                Log.d("BLEManager", "Found device: ${result.device.address}")
-                // Tutaj obsłuż znalezione urządzenie
+
+            result?.device?.let { device ->
+                val deviceName = device.name ?: return
+
+                Log.d("BLEManager", "Found device: ${device.address} with name: $deviceName")
+
+                if (deviceName.contains("emoji", ignoreCase = true)) {
+                    Log.i("BLEManager", "Connecting to emoji device: $deviceName")
+                    connectToDevice(device)
+                }
             }
         }
 
