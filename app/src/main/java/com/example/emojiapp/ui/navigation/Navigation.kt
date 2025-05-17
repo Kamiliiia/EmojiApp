@@ -29,18 +29,23 @@ fun AppNavigation(bleManager: BLEManager) {
         composable(START_ROUTE) { StartScreen(navController) }
         composable(MAIN_ROUTE) { MainScreen(navController) }
         composable(
-            "$SUBCATEGORIES_ROUTE{$CATEGORY_ARGUMENT}",
+            route = "$SUBCATEGORIES_ROUTE{$CATEGORY_ARGUMENT}",
             arguments = listOf(navArgument(CATEGORY_ARGUMENT) { type = NavType.StringType })
         ) { backStackEntry ->
             val category = backStackEntry.arguments?.getString(CATEGORY_ARGUMENT) ?: ""
             SubcategoryScreen(category = category, navController = navController)
         }
         composable(
-            "$CONFIRMATION_ROUTE{$SUBCATEGORY_ARGUMENT}",
+            route = "$CONFIRMATION_ROUTE{$SUBCATEGORY_ARGUMENT}",
             arguments = listOf(navArgument(SUBCATEGORY_ARGUMENT) { type = NavType.StringType })
         ) { backStackEntry ->
             val subcategory = backStackEntry.arguments?.getString(SUBCATEGORY_ARGUMENT) ?: ""
-            ConfirmationScreen(subcategory = subcategory, navController = navController)
+            // Przekaż bleManager do ConfirmationScreen
+            ConfirmationScreen(
+                subcategory = subcategory,
+                navController = navController,
+                bleManager = bleManager // Dodano
+            )
         }
         composable(MESSAGE_SENT_ROUTE) { MessageSentScreen(navController) }
         composable(SETTINGS_ROUTE) { SettingsScreen(navController) }
