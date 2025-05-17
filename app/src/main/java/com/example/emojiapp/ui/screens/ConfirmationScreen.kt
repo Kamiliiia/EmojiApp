@@ -14,15 +14,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.emojiapp.BLEManager // Zaimportuj BLEManager
 import com.example.emojiapp.ui.utils.Constants.MAIN_ROUTE
 import com.example.emojiapp.ui.utils.Constants.MESSAGE_SENT_ROUTE
+import java.util.UUID // Potrzebne dla UUID
 
 /**
  * Ekran potwierdzenia wysłania wiadomości.
  * Wyświetla nazwę podkategorii i przyciski do potwierdzenia.
  */
 @Composable
-fun ConfirmationScreen(subcategory: String, navController: NavHostController) {
+fun ConfirmationScreen(
+    subcategory: String,
+    navController: NavHostController,
+    bleManager: BLEManager // Dodano parametr bleManager
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -38,7 +44,19 @@ fun ConfirmationScreen(subcategory: String, navController: NavHostController) {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(onClick = { navController.navigate(MESSAGE_SENT_ROUTE) }) {
+            Button(onClick = {
+                // 1. Wyślij wiadomość przez BLE
+                // Załóżmy, że masz zdefiniowane UUID serwisu i charakterystyki
+                // oraz że subcategory to String, który chcesz wysłać jako bajty
+                val serviceUUID = UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb") // Użyj UUID z BLEGattServerManager
+                val characteristicUUID = UUID.fromString("0000dcba-0000-1000-8000-00805f9b34fb") // Użyj UUID z BLEGattServerManager
+                val messageBytes = subcategory.toByteArray(Charsets.UTF_8) // Konwertuj String na ByteArray
+
+                bleManager.writeCharacteristic(serviceUUID, characteristicUUID, messageBytes)
+
+                // 2. Nawiguj do ekranu potwierdzenia wysłania
+                navController.navigate(MESSAGE_SENT_ROUTE)
+            }) {
                 Text("Tak")
             }
             Button(onClick = { navController.navigate(MAIN_ROUTE) }) {
