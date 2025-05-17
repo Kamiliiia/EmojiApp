@@ -38,6 +38,7 @@ import android.os.ParcelUuid
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
+const val
 
 class BLEGattServerManager(private val context: Context) {
     private var gattServer: BluetoothGattServer? = null
@@ -128,24 +129,30 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            super.onScanResult(callbackType, result)
+            result?.let { processScanResult(it) }
+        }
 
-            result?.device?.let { device ->
-                val deviceName = device.name ?: return
-                val deviceAddress = device.address
-
-                Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
-
-                if (deviceName.contains("emoji", ignoreCase = true) && connectedDevices.add(deviceAddress)) {
-                    Log.i("BLEManager", "Connecting to emoji device: $deviceName")
-                    connectToDevice(device)
-                }
+        override fun onBatchScanResults(results: List<ScanResult>) {
+            for (result in results) {
+                processScanResult(result)
             }
         }
 
         override fun onScanFailed(errorCode: Int) {
-            super.onScanFailed(errorCode)
             Log.e("BLEManager", "Scan failed with error code: $errorCode")
+        }
+
+        private fun processScanResult(result: ScanResult) {
+            val device = result.device ?: return
+            val deviceName = device.name ?: return
+            val deviceAddress = device.address
+
+            Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
+
+            if (deviceName.contains("emoji", ignoreCase = true) && connectedDevices.add(deviceAddress)) {
+                Log.i("BLEManager", "Connecting to emoji device: $deviceName")
+                connectToDevice(device)
+            }
         }
     }
 
