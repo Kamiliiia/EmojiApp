@@ -294,6 +294,10 @@ class MainActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Log.e("MainActivity", "BLE not supported on this device")
+            finish()
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
