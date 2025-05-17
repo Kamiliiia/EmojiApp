@@ -124,6 +124,7 @@ class BLEGattServerManager(private val context: Context) {
 
 class BLEManager(private val context: Context, private val bluetoothAdapter: BluetoothAdapter?) {
     private var bluetoothGatt: BluetoothGatt? = null
+    private val connectedDevices = mutableSetOf<String>()
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
@@ -131,10 +132,11 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
             result?.device?.let { device ->
                 val deviceName = device.name ?: return
+                val deviceAddress = device.address
 
-                Log.d("BLEManager", "Found device: ${device.address} with name: $deviceName")
+                Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
 
-                if (deviceName.contains("emoji", ignoreCase = true)) {
+                if (deviceName.contains("emoji", ignoreCase = true) && connectedDevices.add(deviceAddress)) {
                     Log.i("BLEManager", "Connecting to emoji device: $deviceName")
                     connectToDevice(device)
                 }
@@ -149,15 +151,16 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
     private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+            val deviceAddress = gatt?.device?.address ?: return
+
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i("BLEManager", "Connected to GATT server.")
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                    gatt?.discoverServices()
-                } else {
-                    Log.d("BLEManager", "Brak uprawnień do odkrywania usług Bluetooth")
+                    gatt.discoverServices()
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i("BLEManager", "Disconnected from GATT server.")
+                connectedDevices.remove(deviceAddress) // Allow reconnection in the future
             }
         }
 
