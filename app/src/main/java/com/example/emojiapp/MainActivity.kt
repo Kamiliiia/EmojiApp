@@ -38,7 +38,6 @@ import android.os.ParcelUuid
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
-const val
 
 class BLEGattServerManager(private val context: Context) {
     private var gattServer: BluetoothGattServer? = null
@@ -133,6 +132,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
         }
 
         override fun onBatchScanResults(results: List<ScanResult>) {
+            Log.d("BLEManager", "Batch scan results received: ${results.size}")
             for (result in results) {
                 processScanResult(result)
             }
@@ -149,11 +149,13 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
             Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
 
-            if (deviceName.contains("emoji", ignoreCase = true) && connectedDevices.add(deviceAddress)) {
-                Log.i("BLEManager", "Connecting to emoji device: $deviceName")
+            if (deviceName.contains("emoji", ignoreCase = true)) {
+                Log.i("BLEManager", "Found emoji device: $deviceName")
+                // Optionally, show in UI or connect based on user action
                 connectToDevice(device)
             }
         }
+
     }
 
     private val gattCallback = object : BluetoothGattCallback() {
@@ -161,13 +163,15 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
             val deviceAddress = gatt?.device?.address ?: return
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                connectedDevices.add(deviceAddress)
                 Log.i("BLEManager", "Connected to GATT server.")
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
+                    == PackageManager.PERMISSION_GRANTED) {
                     gatt.discoverServices()
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i("BLEManager", "Disconnected from GATT server.")
-                connectedDevices.remove(deviceAddress) // Allow reconnection in the future
+                connectedDevices.remove(deviceAddress)
             }
         }
 
@@ -236,7 +240,11 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
                 Log.d("BLEManager", "Brak uprawnień do skanowania Bluetooth")
                 return
             }
-            bluetoothAdapter.bluetoothLeScanner.startScan(null, ScanSettings.Builder().build(), scanCallback)
+            val settings = ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .build()
+
+            bluetoothAdapter.bluetoothLeScanner.startScan(null, settings, scanCallback)
         }
     }
 
