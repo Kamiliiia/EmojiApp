@@ -38,6 +38,8 @@ import android.os.ParcelUuid
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
+const val GATT_SERVICE_UUID = "0000dcba-0000-1000-8000-0080dfdfabba"
+const val GATT_CHARACTERISTIC_UUID = "0000dcba-0000-1000-8000-0080fdfdbaab"
 
 class BLEGattServerManager(private val context: Context) {
     private var gattServer: BluetoothGattServer? = null
@@ -73,12 +75,12 @@ class BLEGattServerManager(private val context: Context) {
         gattServer = bluetoothManager?.openGattServer(context, gattServerCallback)
 
         val service = BluetoothGattService(
-            UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb"),
+            UUID.fromString(GATT_SERVICE_UUID),
             BluetoothGattService.SERVICE_TYPE_PRIMARY
         )
 
         val characteristic = BluetoothGattCharacteristic(
-            UUID.fromString("0000dcba-0000-1000-8000-00805f9b34fb"),
+            UUID.fromString(GATT_CHARACTERISTIC_UUID),
             BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_WRITE,
             BluetoothGattCharacteristic.PERMISSION_READ or BluetoothGattCharacteristic.PERMISSION_WRITE
         )
@@ -103,7 +105,7 @@ class BLEGattServerManager(private val context: Context) {
 
         val data = AdvertiseData.Builder()
             .setIncludeDeviceName(true)
-            .addServiceUuid(ParcelUuid(UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb")))
+            .addServiceUuid(ParcelUuid(UUID.fromString(GATT_SERVICE_UUID)))
             .build()
 
         advertiser.startAdvertising(settings, data, object : AdvertiseCallback() {
@@ -144,7 +146,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
         private fun processScanResult(result: ScanResult) {
             val device = result.device ?: return
-            val deviceName = device.name ?: return
+            val deviceName = device.name //?: return
             val deviceAddress = device.address
 
             Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
