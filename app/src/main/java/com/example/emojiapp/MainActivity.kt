@@ -108,10 +108,12 @@ class BLEGattServerManager(private val context: Context) {
             .build()
 
         val data = AdvertiseData.Builder()
-            .setIncludeDeviceName(true)
+            .setIncludeDeviceName(false)
             .addServiceUuid(ParcelUuid(UUID.fromString(GATT_SERVICE_UUID)))
             .build()
 
+
+        Log.d("BLEServer", "przed advertisingiem")
         advertiser.startAdvertising(settings, data, object : AdvertiseCallback() {
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
                 Log.d("BLEServer", "Advertising started")
@@ -247,7 +249,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
                 return
             }
             val settings = ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                 .build()
 
             bluetoothAdapter.bluetoothLeScanner.startScan(null, settings, scanCallback)
@@ -290,6 +292,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
         val service = bluetoothGatt?.getService(serviceUUID)
         val characteristic = service?.getCharacteristic(characteristicUUID)
+        Log.d("BLEManager", "przed wyslaniem, znalezione service")
 
         if (characteristic != null) {
             characteristic.value = value
