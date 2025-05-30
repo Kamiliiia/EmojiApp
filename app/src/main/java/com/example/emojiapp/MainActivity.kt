@@ -35,6 +35,7 @@ import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.os.ParcelUuid
+import android.widget.Toast
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -65,7 +66,9 @@ class BLEGattServerManager(private val context: Context) {
             preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?
         ) {
             Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
+            Toast.makeText(context, "TEST", Toast.LENGTH_SHORT).show()
             if (responseNeeded) {
+
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
             }
         }
@@ -86,8 +89,9 @@ class BLEGattServerManager(private val context: Context) {
         )
         service.addCharacteristic(characteristic)
         gattServer?.addService(service)
-
+        Log.d("BLEServer", "Uruchomiono BLE GATT SERVER naprawde")
         startAdvertising()
+
     }
 
     private fun startAdvertising() {
@@ -146,12 +150,12 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
         private fun processScanResult(result: ScanResult) {
             val device = result.device ?: return
-            val deviceName = device.name //?: return
+            val deviceName = device.name ?: return
             val deviceAddress = device.address
 
-            Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
+            //Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
 
-            if (deviceName.contains("emoji", ignoreCase = true)) {
+            if (deviceName.contains("amila", ignoreCase = true)) {
                 Log.i("BLEManager", "Found emoji device: $deviceName")
                 // Optionally, show in UI or connect based on user action
                 connectToDevice(device)
@@ -166,13 +170,13 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 connectedDevices.add(deviceAddress)
-                Log.i("BLEManager", "Connected to GATT server.")
+                Log.i("BLEManager", "Connected to urzadzenie GATT server.")
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
                     == PackageManager.PERMISSION_GRANTED) {
                     gatt.discoverServices()
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.i("BLEManager", "Disconnected from GATT server.")
+                Log.i("BLEManager", "Disconnected from urzadzenie GATT server.")
                 connectedDevices.remove(deviceAddress)
             }
         }
@@ -276,7 +280,9 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
         }
     }
 
-    fun writeCharacteristic(serviceUUID: UUID, characteristicUUID: UUID, value: ByteArray) {
+    fun writeCharacteristic(value: ByteArray) {
+        val serviceUUID = UUID.fromString(GATT_SERVICE_UUID)
+        val characteristicUUID = UUID.fromString(GATT_CHARACTERISTIC_UUID)
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             Log.d("BLEManager", "No permission to write characteristic")
             return
@@ -298,6 +304,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 class MainActivity : ComponentActivity() {
     private lateinit var bleManager: BLEManager
     private lateinit var bluetoothAdapter: BluetoothAdapter
+    private lateinit var bluetoothSERVER: BLEGattServerManager
 
     private val requestBluetoothEnableLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -332,6 +339,8 @@ class MainActivity : ComponentActivity() {
         val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
         bleManager = BLEManager(context, bluetoothAdapter)
+        bluetoothSERVER = BLEGattServerManager(context)
+
 
         if (!bluetoothAdapter.isEnabled) {
             requestBluetoothEnableLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
@@ -362,10 +371,15 @@ class MainActivity : ComponentActivity() {
             permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
         }
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH_ADVERTISE)
+        }
+
         if (permissionsToRequest.isNotEmpty()) {
             requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
             bleManager.startScanning()
+            bluetoothSERVER.startServer()
         }
     }
 }

@@ -48,11 +48,9 @@ fun ConfirmationScreen(
                 // 1. Wyślij wiadomość przez BLE
                 // Załóżmy, że masz zdefiniowane UUID serwisu i charakterystyki
                 // oraz że subcategory to String, który chcesz wysłać jako bajty
-                val serviceUUID = UUID.fromString("0000abcd-0000-1000-8000-00805f9b34fb") // Użyj UUID z BLEGattServerManager
-                val characteristicUUID = UUID.fromString("0000dcba-0000-1000-8000-00805f9b34fb") // Użyj UUID z BLEGattServerManager
                 val messageBytes = subcategory.toByteArray(Charsets.UTF_8) // Konwertuj String na ByteArray
 
-                bleManager.writeCharacteristic(serviceUUID, characteristicUUID, messageBytes)
+                bleManager.writeCharacteristic(messageBytes)
 
                 // 2. Nawiguj do ekranu potwierdzenia wysłania
                 navController.navigate(MESSAGE_SENT_ROUTE)
