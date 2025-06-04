@@ -68,7 +68,6 @@ object Constants {
         SUBCAT_LAZIENKA_BATH to Icons.Filled.HotTub, // Ikona dla Wanny
         SUBCAT_ROZRYWKA_TV to Icons.Filled.LiveTv,
         SUBCAT_ROZRYWKA_WALK to Icons.Filled.Forest // Użyj tej ikony. Jeśli jej nie ma w bibliotece, Android Studio podkreśli to na czerwono.
-        // Wtedy zmień na np. Icons.AutoMirrored.Filled.DirectionsWalk
     )
     val CATEGORY_EMOJI = mapOf(
         "Jedzenie" to "\uD83C\uDF54",    //
@@ -76,4 +75,14 @@ object Constants {
         "Rozrywka" to "\uD83C\uDFAC",    //
         OTHER_SUBCATEGORY to "\u2753"   //
     )
+
+    val SUBCATEGORY_EMOJI: Map<String, String> = mapOf(
+        // Klucze powinny pasować do stałych używanych w aplikacji, np. Constants.SUBCAT_JEDZENIE_FOOD
+        "Jedzenie" to "\uD83C\uDF54",      // 🍔 Hamburger (dla podkategorii "Jedzenie" w kategorii "Jedzenie")
+        "Picie" to "\uD83C\uDF79",         // 🍹 Tropikalny drink
+        "Toaleta" to "\uD83D\uDEBD",       // 🚽 Symbol WC (często używane emoji dla toalety)
+        "Wanna" to "\uD83D\uDEC0",         // 🛀 Osoba w wannie
+        "Telewizja" to "\uD83D\uDCFA",     // 📺 Telewizor
+        "Spacer" to "\uD83D\uDEB6")
+
 }
