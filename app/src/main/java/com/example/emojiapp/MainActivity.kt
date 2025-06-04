@@ -36,6 +36,7 @@ import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.os.ParcelUuid
 import android.widget.Toast
+import android.os.Build
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -157,7 +158,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
             //Log.d("BLEManager", "Found device: $deviceAddress with name: $deviceName")
 
-            if (deviceName.contains("amila", ignoreCase = true)) {
+            if (deviceName.contains("amil", ignoreCase = true)) {
                 Log.i("BLEManager", "Found emoji device: $deviceName")
                 // Optionally, show in UI or connect based on user action
                 connectToDevice(device)
@@ -173,6 +174,7 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 connectedDevices.add(deviceAddress)
                 Log.i("BLEManager", "Connected to urzadzenie GATT server.")
+                stopScanning()
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
                     == PackageManager.PERMISSION_GRANTED) {
                     gatt.discoverServices()
@@ -381,8 +383,19 @@ class MainActivity : ComponentActivity() {
         if (permissionsToRequest.isNotEmpty()) {
             requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            bleManager.startScanning()
-            bluetoothSERVER.startServer()
+            val isSamsung = Build.MANUFACTURER == "samsung"
+            val isXiaomi = Build.MANUFACTURER == "Xiaomi"
+
+            if (isSamsung) {
+                Log.d("MainActivity", "MAMY SAMSUNG")
+                bluetoothSERVER.startServer()
+            }
+
+            if (isXiaomi) {
+                Log.d("MainActivity", "MAMY XIAOMI")
+                bleManager.startScanning()
+            }
+
         }
     }
 }
