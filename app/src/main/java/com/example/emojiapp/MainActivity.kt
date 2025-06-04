@@ -37,6 +37,7 @@ import android.bluetooth.le.AdvertiseSettings
 import android.os.ParcelUuid
 import android.widget.Toast
 import android.os.Build
+import com.example.emojiapp.ui.utils.Constants
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -68,8 +69,9 @@ class BLEGattServerManager(private val context: Context) {
         ) {
             Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
             val message = value?.toString(Charsets.UTF_8) ?: "\uD83D\uDE0E"
+            val emoji = Constants.CATEGORY_EMOJI[message] ?: "brak"
             android.os.Handler(android.os.Looper.getMainLooper()).post {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, emoji, Toast.LENGTH_SHORT).show()
             }
             if (responseNeeded) {
 

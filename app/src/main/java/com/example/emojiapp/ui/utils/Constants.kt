@@ -30,4 +30,10 @@ object Constants {
         "Rozrywka" to Icons.Filled.MusicNote,
         OTHER_SUBCATEGORY to Icons.Filled.Sos // Dodano ikonkę SOS
     )
+    val CATEGORY_EMOJI = mapOf(
+        "Jedzenie" to "\uD83C\uDF54",    //
+        "Łazienka" to "\uD83D\uDEBD",    //
+        "Rozrywka" to "\uD83C\uDFAC",    //
+        OTHER_SUBCATEGORY to "\u2753"   //
+    )
 }
