@@ -88,7 +88,7 @@ class BLEGattServerManager(private val context: Context) {
             val builder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
                 .setContentTitle("$emoji")
-                .setContentText("$emoji")
+                .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 
             notificationManager.notify(1, builder.build())

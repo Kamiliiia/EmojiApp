@@ -31,7 +31,7 @@ import com.example.emojiapp.ui.utils.Constants
 @Composable
 fun MainScreen(navController: NavHostController) {
     val pagerState = rememberPagerState(pageCount = { 4 })
-    val categories = listOf("Jedzenie", "Łazienka", "Rozrywka", "Inne")
+    val categories = listOf("Jedzenie", "Łazienka", "Rozrywka", "SOS")
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
