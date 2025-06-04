@@ -38,6 +38,9 @@ import android.os.ParcelUuid
 import android.widget.Toast
 import android.os.Build
 import com.example.emojiapp.ui.utils.Constants
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import androidx.core.app.NotificationCompat
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -69,10 +72,26 @@ class BLEGattServerManager(private val context: Context) {
         ) {
             Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
             val message = value?.toString(Charsets.UTF_8) ?: "\uD83D\uDE0E"
-            val emoji = Constants.CATEGORY_EMOJI[message] ?: "brak"
-            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                Toast.makeText(context, emoji, Toast.LENGTH_SHORT).show()
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channelId = "emoji_app_channel"
+            val emoji = Constants.CATEGORY_EMOJI[message] ?: ""
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channelId,
+                    "Emoji Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                notificationManager.createNotificationChannel(channel)
             }
+
+            val builder = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
+                .setContentTitle("$emoji")
+                .setContentText("$emoji")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+            notificationManager.notify(1, builder.build())
             if (responseNeeded) {
 
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
