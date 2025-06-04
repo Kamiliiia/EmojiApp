@@ -53,6 +53,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.33.2-alpha")
+    implementation("androidx.core:core:1.12.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

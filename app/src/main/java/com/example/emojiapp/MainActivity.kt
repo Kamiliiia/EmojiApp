@@ -41,6 +41,9 @@ import com.example.emojiapp.ui.utils.Constants
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import androidx.core.app.NotificationCompat
+import android.media.AudioAttributes
+import android.net.Uri
+
 
 const val REQUEST_ENABLE_BT = 1
 const val REQUEST_BLUETOOTH_SCAN_PERMISSION = 2
@@ -73,25 +76,73 @@ class BLEGattServerManager(private val context: Context) {
             Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
             val message = value?.toString(Charsets.UTF_8) ?: "\uD83D\uDE0E"
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channelId = "emoji_app_channel"
+            val channelId = "emoji_app_channel2"
+            val channelIDSOS = "emoji_app_channelsos"
             val emoji = Constants.CATEGORY_EMOJI[message] ?: ""
+            val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.bell}")
+            val soundUriSOS = Uri.parse("android.resource://${context.packageName}/${R.raw.sos}")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    channelId,
-                    "Emoji Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-                )
-                notificationManager.createNotificationChannel(channel)
+                if(message == "SOS")
+                {
+                    val channel = NotificationChannel(
+                        channelIDSOS,
+                        "Emoji Notifications SOS",
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        // Step 2: Set custom sound on the channel
+                        setSound(soundUriSOS, AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                        )
+                    }
+                    notificationManager.createNotificationChannel(channel)
+                }
+                else
+                {
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Emoji Notifications 2",
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        // Step 2: Set custom sound on the channel
+                        setSound(soundUri, AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                        )
+                    }
+                    notificationManager.createNotificationChannel(channel)
+                }
             }
 
-            val builder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
-                .setContentTitle("$emoji")
-                .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+            if(message=="SOS")
+            {
+                val builder = NotificationCompat.Builder(context, channelIDSOS)
+                    .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
+                    .setContentTitle("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
+                    .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-            notificationManager.notify(1, builder.build())
+                builder.setSound(soundUriSOS)
+
+                notificationManager.notify(1, builder.build())
+            }
+            else
+            {
+                val builder = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
+                    .setContentTitle("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
+                    .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+                builder.setSound(soundUri)
+
+                notificationManager.notify(1, builder.build())
+            }
+
+
             if (responseNeeded) {
 
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
