@@ -65,7 +65,7 @@ class BLEGattServerManager(private val context: Context) {
             characteristic: BluetoothGattCharacteristic?
         ) {
             Log.d("BLEServer", "Read request from $device for ${characteristic?.uuid}")
-            val response = byteArrayOf(0x42) // Example byte
+            val response = byteArrayOf(0x42)
             gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, response)
         }
 
@@ -90,7 +90,6 @@ class BLEGattServerManager(private val context: Context) {
                         "Emoji Notifications SOS",
                         NotificationManager.IMPORTANCE_HIGH
                     ).apply {
-                        // Step 2: Set custom sound on the channel
                         setSound(soundUriSOS, AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -106,7 +105,6 @@ class BLEGattServerManager(private val context: Context) {
                         "Emoji Notifications 2",
                         NotificationManager.IMPORTANCE_HIGH
                     ).apply {
-                        // Step 2: Set custom sound on the channel
                         setSound(soundUri, AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -120,7 +118,7 @@ class BLEGattServerManager(private val context: Context) {
             if(message=="SOS")
             {
                 val builder = NotificationCompat.Builder(context, channelIDSOS)
-                    .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
+                    .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
                     .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -132,7 +130,7 @@ class BLEGattServerManager(private val context: Context) {
             else
             {
                 val builder = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_notification) // <- tu Twoja ikonka
+                    .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
                     .setContentText("$emoji$emoji$emoji $message $emoji$emoji$emoji $message $emoji$emoji$emoji")
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -237,7 +235,6 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
 
             if (deviceName.contains("amil", ignoreCase = true)) {
                 Log.i("BLEManager", "Found emoji device: $deviceName")
-                // Optionally, show in UI or connect based on user action
                 connectToDevice(device)
             }
         }
