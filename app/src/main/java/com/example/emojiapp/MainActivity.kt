@@ -67,7 +67,10 @@ class BLEGattServerManager(private val context: Context) {
             preparedWrite: Boolean, responseNeeded: Boolean, offset: Int, value: ByteArray?
         ) {
             Log.d("BLEServer", "Write to ${characteristic?.uuid} from $device: ${value?.joinToString()}")
-            Toast.makeText(context, "TEST", Toast.LENGTH_SHORT).show()
+            val message = value?.toString(Charsets.UTF_8) ?: "\uD83D\uDE0E"
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
             if (responseNeeded) {
 
                 gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
@@ -86,7 +89,9 @@ class BLEGattServerManager(private val context: Context) {
         val characteristic = BluetoothGattCharacteristic(
             UUID.fromString(GATT_CHARACTERISTIC_UUID),
             BluetoothGattCharacteristic.PROPERTY_READ or BluetoothGattCharacteristic.PROPERTY_WRITE,
-            BluetoothGattCharacteristic.PERMISSION_READ or BluetoothGattCharacteristic.PERMISSION_WRITE
+            BluetoothGattCharacteristic.PERMISSION_READ or
+                    BluetoothGattCharacteristic.PERMISSION_WRITE or
+                    BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED
         )
         service.addCharacteristic(characteristic)
         gattServer?.addService(service)
