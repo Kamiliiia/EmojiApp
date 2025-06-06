@@ -27,6 +27,5 @@ fun SettingsScreen(navController: NavHostController) {
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center
         )
-        // Tutaj możesz dodać więcej elementów UI dla ustawień
     }
 }

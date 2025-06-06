@@ -35,7 +35,6 @@ import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.os.ParcelUuid
-import android.widget.Toast
 import android.os.Build
 import com.example.emojiapp.ui.utils.Constants
 import android.app.NotificationChannel
@@ -268,8 +267,6 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
                         Log.d("BLEManager", "  Characteristic UUID: ${characteristic.uuid}")
                     }
                 }
-
-                // Optional: Automatically read or write here if desired
             } else {
                 Log.w("BLEManager", "Service discovery failed with status: $status")
             }
@@ -312,10 +309,6 @@ class BLEManager(private val context: Context, private val bluetoothAdapter: Blu
             }
             bluetoothGatt = device.connectGatt(context, false, gattCallback)
         }
-    }
-
-    fun chooseSendMode(bool: Boolean) {
-        // Tutaj zaimplementuj swoją logikę
     }
 
     fun startScanning() {

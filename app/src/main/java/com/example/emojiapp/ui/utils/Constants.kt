@@ -65,9 +65,9 @@ object Constants {
         SUBCAT_JEDZENIE_FOOD to Icons.Filled.LunchDining,
         SUBCAT_JEDZENIE_DRINK to Icons.Filled.WineBar,
         SUBCAT_LAZIENKA_WC to Icons.Filled.Wc,
-        SUBCAT_LAZIENKA_BATH to Icons.Filled.HotTub, // Ikona dla Wanny
+        SUBCAT_LAZIENKA_BATH to Icons.Filled.HotTub,
         SUBCAT_ROZRYWKA_TV to Icons.Filled.LiveTv,
-        SUBCAT_ROZRYWKA_WALK to Icons.Filled.Forest // Użyj tej ikony. Jeśli jej nie ma w bibliotece, Android Studio podkreśli to na czerwono.
+        SUBCAT_ROZRYWKA_WALK to Icons.Filled.Forest
     )
 
     val CATEGORY_EMOJI: Map<String, String> = mapOf(

@@ -42,13 +42,9 @@ fun SubcategoryItem(subcategoryName: String, navController: NavHostController) {
                 imageVector = icon,
                 contentDescription = subcategoryName, // Opis dla dostępności
                 modifier = Modifier.size(150.dp) // Duży rozmiar ikony, jak w CategoryScreen
-                // Możesz dostosować ten rozmiar
             )
         } else {
-            // Co zrobić, jeśli ikona nie zostanie znaleziona?
-            // Można wyświetlić placeholder, tekst błędu lub nic.
             Log.w("SubcategoryItem", "Icon not found for subcategory: $subcategoryName")
-            // Dla przykładu, wyświetlmy nazwę podkategorii, jeśli brakuje ikony
             Text(
                 text = "$subcategoryName\n(brak ikony)",
                 style = MaterialTheme.typography.headlineSmall,

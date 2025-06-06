@@ -20,7 +20,7 @@ import com.example.emojiapp.ui.utils.Constants.START_ROUTE
  * Pokazuje komunikat o wysłaniu wiadomości i umożliwia powrót do ekranu startowego.
  */
 @Composable
-fun MessageSentScreen(navController: NavHostController) { // Dodano navController
+fun MessageSentScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -40,11 +40,10 @@ fun AppNavigation(bleManager: BLEManager) {
             arguments = listOf(navArgument(SUBCATEGORY_ARGUMENT) { type = NavType.StringType })
         ) { backStackEntry ->
             val subcategory = backStackEntry.arguments?.getString(SUBCATEGORY_ARGUMENT) ?: ""
-            // Przekaż bleManager do ConfirmationScreen
             ConfirmationScreen(
                 subcategory = subcategory,
                 navController = navController,
-                bleManager = bleManager // Dodano
+                bleManager = bleManager
             )
         }
         composable(MESSAGE_SENT_ROUTE) { MessageSentScreen(navController) }

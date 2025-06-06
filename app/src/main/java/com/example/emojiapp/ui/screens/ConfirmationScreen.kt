@@ -14,10 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.emojiapp.BLEManager // Zaimportuj BLEManager
+import com.example.emojiapp.BLEManager
 import com.example.emojiapp.ui.utils.Constants.MAIN_ROUTE
 import com.example.emojiapp.ui.utils.Constants.MESSAGE_SENT_ROUTE
-import java.util.UUID // Potrzebne dla UUID
 
 /**
  * Ekran potwierdzenia wysłania wiadomości.
@@ -27,7 +26,7 @@ import java.util.UUID // Potrzebne dla UUID
 fun ConfirmationScreen(
     subcategory: String,
     navController: NavHostController,
-    bleManager: BLEManager // Dodano parametr bleManager
+    bleManager: BLEManager
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -45,14 +44,10 @@ fun ConfirmationScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(onClick = {
-                // 1. Wyślij wiadomość przez BLE
-                // Załóżmy, że masz zdefiniowane UUID serwisu i charakterystyki
-                // oraz że subcategory to String, który chcesz wysłać jako bajty
-                val messageBytes = subcategory.toByteArray(Charsets.UTF_8) // Konwertuj String na ByteArray
+                val messageBytes = subcategory.toByteArray(Charsets.UTF_8)
 
                 bleManager.writeCharacteristic(messageBytes)
 
-                // 2. Nawiguj do ekranu potwierdzenia wysłania
                 navController.navigate(MESSAGE_SENT_ROUTE)
             }) {
                 Text("Tak")
